@@ -85,8 +85,12 @@ public class ClientForm implements Initializable {
     }
 
     public void deleteItem(ActionEvent actionEvent) {
-        String file = listView.getSelectionModel().getSelectedItem();
-        System.out.println(file + " will be deleted!");
+        String delFile = listView.getSelectionModel().getSelectedItem();
+        System.out.println(delFile + " will be deleted!");
+        File file = new File(path + "/" + delFile);
+        if (file.delete()) {
+            System.out.println(delFile + " файл был удален");
+        } else System.out.println("Файл " + delFile + " не был найден");
         refreshList();
     }
 }
