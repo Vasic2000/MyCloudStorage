@@ -44,6 +44,7 @@ public class ClientForm implements Initializable {
             while ((tmp = is.read(buffer)) != -1) {
                 cos.write(buffer, 0, tmp);
             }
+            is.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,21 +60,21 @@ public class ClientForm implements Initializable {
             File dFile = new File("client/src/main/resources/client_storage/" + file);
             if (!dFile.exists()) {
                 dFile.createNewFile();
+                FileOutputStream os = new FileOutputStream(dFile);
+                //                2. Получаю размер
+                long fileLength = cis.readLong();
+                System.out.println("Wait: " + fileLength + " bytes");
+//                3. Читаю
+                byte[] buffer = new byte[8192];
+                for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
+                    int cnt = cis.read(buffer);
+                    os.write(buffer, 0, cnt);
+                }
+                System.out.println("Downloaded!");
+                os.close();
             } else {
                 System.out.println("Такой уже есть");
             }
-            FileOutputStream os = new FileOutputStream(dFile);
-            //                2. Получаю размер
-            long fileLength = cis.readLong();
-            System.out.println("Wait: " + fileLength + " bytes");
-//                3. Читаю
-            byte[] buffer = new byte[8192];
-            for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
-                int cnt = cis.read(buffer);
-                os.write(buffer, 0, cnt);
-            }
-            System.out.println("Downloaded!");
-            os.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

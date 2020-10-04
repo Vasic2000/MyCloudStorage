@@ -43,41 +43,40 @@ public class Server {
                     if (!file.exists()) {
 //                      Сюда попасть не должен никогда, но пусть будет для отладки
                         System.out.println("У server нет " + dFile + " файла :(");
-                    }
-                    else {
+                    } else {
                         try {
                             sos.writeLong(dFile.length());
                             FileInputStream is = new FileInputStream(file);
                             int tmp;
-                            byte [] buffer = new byte[8192];
+                            byte[] buffer = new byte[8192];
                             while ((tmp = is.read(buffer)) != -1) {
-                            sos.write(buffer, 0, tmp);
-                        }
-                    } catch (IOException e) {
+                                sos.write(buffer, 0, tmp);
+                            }
+                            is.close();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-                }
-                else {
+                } else {
                     System.out.println("Save file: " + fileName);
                     File file = new File("server/src/main/resources/" + fileName);
                     if (!file.exists()) {
                         file.createNewFile();
+                        FileOutputStream os = new FileOutputStream(file);
+                        //                2. Получаю размер
+                        long fileLength = sis.readLong();
+                        System.out.println("Wait: " + fileLength + " bytes");
+//                3. Читаю
+                        byte[] buffer = new byte[8192];
+                        for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
+                            int cnt = sis.read(buffer);
+                            os.write(buffer, 0, cnt);
+                        }
+                        System.out.println("File successfully uploaded!");
+                        os.close();
                     } else {
                         System.out.println("Такой уже есть");
                     }
-                    FileOutputStream os = new FileOutputStream(file);
-                    //                2. Получаю размер
-                    long fileLength = sis.readLong();
-                    System.out.println("Wait: " + fileLength + " bytes");
-//                3. Читаю
-                    byte[] buffer = new byte[8192];
-                    for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
-                        int cnt = sis.read(buffer);
-                        os.write(buffer, 0, cnt);
-                    }
-                    System.out.println("File successfully uploaded!");
-                    os.close();
                 }
             }
         } catch (IOException e) {
