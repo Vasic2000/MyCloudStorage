@@ -14,6 +14,7 @@ public class ClientForm implements Initializable {
     private String path = "client/src/main/resources/client_storage";
     private DataInputStream cis;
     private DataOutputStream cos;
+    private boolean upLoad = false;
 
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -23,6 +24,11 @@ public class ClientForm implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void load(ActionEvent actionEvent) {
+        if(!upLoad) upload(actionEvent);
+        else download(actionEvent);
     }
 
     public void upload(ActionEvent actionEvent) {
@@ -43,6 +49,36 @@ public class ClientForm implements Initializable {
         }
     }
 
+    public void download(ActionEvent actionEvent) {
+        String file = listView.getSelectionModel().getSelectedItem();
+        System.out.println("Прошу у сервера " + file);
+        try {
+            cos.writeUTF("_downLoad");
+            cos.writeUTF(file);
+
+            File dFile = new File("client/src/main/resources/client_storage/" + file);
+            if (!dFile.exists()) {
+                dFile.createNewFile();
+            } else {
+                System.out.println("Такой уже есть");
+            }
+            FileOutputStream os = new FileOutputStream(dFile);
+            //                2. Получаю размер
+            long fileLength = cis.readLong();
+            System.out.println("Wait: " + fileLength + " bytes");
+//                3. Читаю
+            byte[] buffer = new byte[8192];
+            for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
+                int cnt = cis.read(buffer);
+                os.write(buffer, 0, cnt);
+            }
+            System.out.println("Downloaded!");
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void refreshList() {
         File file = new File(path);
         String[] files = file.list();
@@ -55,6 +91,7 @@ public class ClientForm implements Initializable {
     }
 
     private List<String> getServerFiles() throws IOException {
+        upLoad = true;
         List<String> files = new ArrayList();
         cos.writeUTF("_getFilesList?");
         cos.flush();
@@ -71,7 +108,7 @@ public class ClientForm implements Initializable {
     }
 
     public void clientList(ActionEvent actionEvent ) {
-
+        upLoad = false;
         refreshList();
     }
 

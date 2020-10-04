@@ -36,7 +36,29 @@ public class Server {
                         sos.writeInt(0);
                     }
                     sos.flush();
-                } else {
+                } else if (fileName.equals("_downLoad")) {
+                    String dFile = sis.readUTF();
+                    System.out.println("Отдаю file: " + dFile);
+                    File file = new File("Server/src/main/resources/" + dFile);
+                    if (!file.exists()) {
+//                      Сюда попасть не должен никогда, но пусть будет для отладки
+                        System.out.println("У server нет " + dFile + " файла :(");
+                    }
+                    else {
+                        try {
+                            sos.writeLong(dFile.length());
+                            FileInputStream is = new FileInputStream(file);
+                            int tmp;
+                            byte [] buffer = new byte[8192];
+                            while ((tmp = is.read(buffer)) != -1) {
+                            sos.write(buffer, 0, tmp);
+                        }
+                    } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else {
                     System.out.println("Save file: " + fileName);
                     File file = new File("server/src/main/resources/" + fileName);
                     if (!file.exists()) {
