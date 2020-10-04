@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane
+        alignment="center"
+        hgap="10" vgap="10"
+        xmlns="http://javafx.com/javafx/11.0.1"
+        xmlns:fx="http://javafx.com/f
+        xml/1"
+        fx:controller="ClientForm">
+
+    <AnchorPane prefHeight="640.0" prefWidth="480.0">
+        <ListView fx:id="listView"
+                  layoutX="15.0"
+                  layoutY="15.0"
+
+                  prefHeight="500.0"
+                  prefWidth="450.0"/>
+
+        <Button layoutX="250.0"
+                layoutY="590.0"
+                mnemonicParsing="false"
+
+                onAction="#upload"
+                prefHeight="40.0"
+                prefWidth="100.0"
+
+                text="UPLOAD"/>
+
+        <Button layoutX="300.0"
+                layoutY="530.0"
+                mnemonicParsing="false"
+
+                onAction="#refreshList"
+                prefHeight="40.0"
+                prefWidth="100.0"
+
+                text="REFRESH"/>
+
+        <Button layoutX="175.0"
+                layoutY="530.0"
+                mnemonicParsing="false"
+
+                onAction="#serverList"
+                prefHeight="40.0"
+                prefWidth="100.0"
+
+                text="SERVER_LIST"/>
+
+        <Button layoutX="50.0"
+                layoutY="530.0"
+                mnemonicParsing="false"
+
+                onAction="#clientList"
+                prefHeight="40.0"
+                prefWidth="100.0"
+
+                text="CLIENT_LIST"/>
+
+        <Button layoutX="100.0"
+                layoutY="590.0"
+                mnemonicParsing="false"
+
+                onAction="#deleteItem"
+                prefHeight="40.0"
+                prefWidth="100.0"
+
+                text="DELETE"/>
+
+    </AnchorPane>
+</GridPane>
