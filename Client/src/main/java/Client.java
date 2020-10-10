@@ -8,7 +8,7 @@ public class Client extends Application {
 
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass()
-                .getResource("ClientForm.fxml"));
+                .getResource("ClientFormNew.fxml"));
         primaryStage.setTitle("MyCloudStorage");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

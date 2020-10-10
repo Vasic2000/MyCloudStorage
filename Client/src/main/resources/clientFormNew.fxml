@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientForm">
+
+    <AnchorPane prefHeight="600.0" prefWidth="800.0">
+        <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
+        <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
+
+        <Button layoutX="100.0" layoutY="525.0" mnemonicParsing="false" onAction="#deleteItem" prefHeight="40.0" prefWidth="100.0" text="DELETE" />
+
+
+      <Button layoutX="350.0" layoutY="225.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Client -&gt; Server" />
+      <Button layoutX="350.0" layoutY="295.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Client &lt;- Server" />
+
+    </AnchorPane>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+</GridPane>

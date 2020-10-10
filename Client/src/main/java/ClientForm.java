@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
-    public ListView<String> listView;
+    public ListView<String> listClient;
     private String path = "client/src/main/resources/client_storage";
     private DataInputStream cis;
     private DataOutputStream cos;
@@ -32,7 +32,7 @@ public class ClientForm implements Initializable {
     }
 
     public void upload(ActionEvent actionEvent) {
-        String file = listView.getSelectionModel().getSelectedItem();
+        String file = listClient.getSelectionModel().getSelectedItem();
         System.out.println(file);
         try {
             cos.writeUTF(file);
@@ -51,7 +51,7 @@ public class ClientForm implements Initializable {
     }
 
     public void download(ActionEvent actionEvent) {
-        String file = listView.getSelectionModel().getSelectedItem();
+        String file = listClient.getSelectionModel().getSelectedItem();
         System.out.println("Прошу у сервера " + file);
         try {
             cos.writeUTF("_downLoad");
@@ -83,10 +83,10 @@ public class ClientForm implements Initializable {
     private void refreshList() {
         File file = new File(path);
         String[] files = file.list();
-        listView.getItems().clear();
+        listClient.getItems().clear();
         if (files != null) {
             for (String name : files) {
-                listView.getItems().add(name);
+                listClient.getItems().add(name);
             }
         }
     }
@@ -115,15 +115,15 @@ public class ClientForm implements Initializable {
 
     public void serverList(ActionEvent actionEvent) {
         try {
-            listView.getItems().clear();
-            listView.getItems().addAll(getServerFiles());
+            listClient.getItems().clear();
+            listClient.getItems().addAll(getServerFiles());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteItem(ActionEvent actionEvent) {
-        String delFile = listView.getSelectionModel().getSelectedItem();
+        String delFile = listClient.getSelectionModel().getSelectedItem();
         System.out.println(delFile + " will be deleted!");
         File file = new File(path + "/" + delFile);
         if (file.delete()) {
