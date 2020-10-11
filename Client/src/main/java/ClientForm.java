@@ -1,4 +1,5 @@
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 
@@ -10,8 +11,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
-    public ListView<String> listClient;
     private String path = "client/src/main/resources/client_storage";
+
+    @FXML
+    private ListView<String> listClient;
+    @FXML
+    private ListView<String> listServer;
+
     private DataInputStream cis;
     private DataOutputStream cos;
     private boolean upLoad = false;
@@ -21,14 +27,13 @@ public class ClientForm implements Initializable {
             Socket socket = new Socket("localhost", 8189);
             cis = new DataInputStream(socket.getInputStream());
             cos = new DataOutputStream(socket.getOutputStream());
+
+            refreshClientList();
+            refreshServerList();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void load(ActionEvent actionEvent) {
-        if(!upLoad) upload(actionEvent);
-        else download(actionEvent);
     }
 
     public void upload(ActionEvent actionEvent) {
@@ -80,7 +85,7 @@ public class ClientForm implements Initializable {
         }
     }
 
-    private void refreshList() {
+    private void refreshClientList() {
         File file = new File(path);
         String[] files = file.list();
         listClient.getItems().clear();
@@ -91,8 +96,17 @@ public class ClientForm implements Initializable {
         }
     }
 
+    private void refreshServerList() throws IOException {
+        List<String> files = getServerFiles();
+        listServer.getItems().clear();
+        if (files != null) {
+            for (String name : files) {
+                listServer.getItems().add(name);
+            }
+        }
+    }
+
     private List<String> getServerFiles() throws IOException {
-        upLoad = true;
         List<String> files = new ArrayList();
         cos.writeUTF("_getFilesList?");
         cos.flush();
@@ -103,25 +117,6 @@ public class ClientForm implements Initializable {
         return files;
     }
 
-    public void refreshList(ActionEvent actionEvent) {
-
-        refreshList();
-    }
-
-    public void clientList(ActionEvent actionEvent ) {
-        upLoad = false;
-        refreshList();
-    }
-
-    public void serverList(ActionEvent actionEvent) {
-        try {
-            listClient.getItems().clear();
-            listClient.getItems().addAll(getServerFiles());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void deleteItem(ActionEvent actionEvent) {
         String delFile = listClient.getSelectionModel().getSelectedItem();
         System.out.println(delFile + " will be deleted!");
@@ -129,6 +124,6 @@ public class ClientForm implements Initializable {
         if (file.delete()) {
             System.out.println(delFile + " файл был удален");
         } else System.out.println("Файл " + delFile + " не был найден");
-        refreshList();
+        refreshClientList();
     }
 }
