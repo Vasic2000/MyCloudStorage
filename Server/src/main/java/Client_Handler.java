@@ -1,29 +1,27 @@
 import java.io.*;
 import java.net.Socket;
 
-public class TCP_Connection {
+public class Client_Handler {
 
     private final Socket socket;
     private final Thread rxThread;
-    private final TCP_Connection tcp_eventsListener;
     private final DataInputStream dis;
     private final DataOutputStream dos;
     //    Где сервер собирает файлы
     private static final String path = "server/src/main/resources/";
 
-    public TCP_Connection(final TCP_Connection tcp_eventsListener, Socket socket) throws IOException {
+    public Client_Handler(Socket socket) throws IOException {
 
         this.socket = socket;
-        this.tcp_eventsListener = tcp_eventsListener;
-        
+
         dis = new DataInputStream(socket.getInputStream());
         dos = new DataOutputStream(socket.getOutputStream());
 
         rxThread = new Thread(new Runnable() {
+            @Override
             public void run() {
-                tcp_eventsListener.onConnectionReady(TCP_Connection.this);
-                while(true) {
-                    try {
+                try {
+                    while (!rxThread.isInterrupted()) {
 //                1. Жду имя и проверяю, нет ли уже такого
                         String fileName = dis.readUTF();
 
@@ -81,15 +79,23 @@ public class TCP_Connection {
                                 System.out.println("Такой уже есть");
                             }
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
                     }
+                } catch (IOException e) {
+                    disconnect();
+                    e.printStackTrace();
                 }
             }
         });
         rxThread.start();
     }
 
-    private void onConnectionReady(TCP_Connection tcp_connection) {
+    public void disconnect() {
+        rxThread.interrupt();
+        try {
+            socket.close();
+        } catch (IOException io) {
+            System.out.println(io);
+        }
     }
 }
