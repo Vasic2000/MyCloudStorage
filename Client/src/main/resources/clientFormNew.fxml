@@ -10,8 +10,8 @@
         <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
         <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
 
-        <Button layoutX="350.0" layoutY="225.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Client -&gt; Server" />
-        <Button layoutX="350.0" layoutY="295.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Client &lt;- Server" />
+        <Button layoutX="350.0" layoutY="225.0" mnemonicParsing="false" onAction="#upload" prefHeight="40.0" prefWidth="100.0" text="Client -&gt; Server" />
+        <Button layoutX="350.0" layoutY="295.0" mnemonicParsing="false" onAction="#download" prefHeight="40.0" prefWidth="100.0" text="Client &lt;- Server" />
 
         <Button layoutX="115.0" layoutY="526.0" mnemonicParsing="false" onAction="#deleteItem" prefHeight="40.0" prefWidth="100.0" text="DELETE">
          <font>

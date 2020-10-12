@@ -20,7 +20,6 @@ public class ClientForm implements Initializable {
 
     private DataInputStream cis;
     private DataOutputStream cos;
-    private boolean upLoad = false;
 
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -50,6 +49,7 @@ public class ClientForm implements Initializable {
                 cos.write(buffer, 0, tmp);
             }
             is.close();
+            refreshServerList();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,6 +77,7 @@ public class ClientForm implements Initializable {
                 }
                 System.out.println("Downloaded!");
                 os.close();
+                refreshClientList();
             } else {
                 System.out.println("Такой уже есть");
             }
@@ -94,6 +95,7 @@ public class ClientForm implements Initializable {
                 listClient.getItems().add(name);
             }
         }
+        listClient.refresh();
     }
 
     private void refreshServerList() throws IOException {
@@ -104,6 +106,7 @@ public class ClientForm implements Initializable {
                 listServer.getItems().add(name);
             }
         }
+        listServer.refresh();
     }
 
     private List<String> getServerFiles() throws IOException {

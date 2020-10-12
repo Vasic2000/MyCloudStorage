@@ -5,22 +5,22 @@ public class Client_Handler {
 
     private final Socket socket;
     private final Thread rxThread;
-    private final DataInputStream dis;
-    private final DataOutputStream dos;
+    private DataInputStream dis;
+    private DataOutputStream dos;
     //    Где сервер собирает файлы
     private static final String path = "server/src/main/resources/";
 
-    public Client_Handler(Socket socket) throws IOException {
+    public Client_Handler(final Socket socket) {
 
         this.socket = socket;
-
-        dis = new DataInputStream(socket.getInputStream());
-        dos = new DataOutputStream(socket.getOutputStream());
 
         rxThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    dis = new DataInputStream(socket.getInputStream());
+                    dos = new DataOutputStream(socket.getOutputStream());
+
                     while (!rxThread.isInterrupted()) {
 //                1. Жду имя и проверяю, нет ли уже такого
                         String fileName = dis.readUTF();
@@ -94,7 +94,6 @@ public class Client_Handler {
                     }
                 } catch (IOException e) {
                     disconnect();
-                    e.printStackTrace();
                 }
             }
         });
