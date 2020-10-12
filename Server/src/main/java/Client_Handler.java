@@ -84,7 +84,7 @@ public class Client_Handler {
                                         int cnt = dis.read(buffer);
                                         os.write(buffer, 0, cnt);
                                     }
-                                    System.out.println("File successfully uploaded!");
+                                    System.out.println("File successfully uploaded!" + buffer.toString());
                                     os.close();
                                 } else {
                                     System.out.println("Такой уже есть");

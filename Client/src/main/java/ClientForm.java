@@ -56,7 +56,7 @@ public class ClientForm implements Initializable {
     }
 
     public void download(ActionEvent actionEvent) {
-        String file = listClient.getSelectionModel().getSelectedItem();
+        String file = listServer.getSelectionModel().getSelectedItem();
         System.out.println("Прошу у сервера " + file);
         try {
             cos.writeUTF("_downLoad");
