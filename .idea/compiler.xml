@@ -10,5 +10,8 @@
         <module name="Server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Network" target="6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
