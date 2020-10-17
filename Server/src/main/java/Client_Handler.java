@@ -27,6 +27,13 @@ public class Client_Handler {
 
                         switch (fileName) {
 
+                            case "_whoIsFile" :
+                                String boolFile = dis.readUTF();
+                                File bFile = new File("Server/src/main/resources/" + boolFile);
+                                Boolean bbb = bFile.isDirectory();
+                                dos.writeBoolean(bbb);
+                                break;
+
                             case "_getFilesList?":
                                 File dir = new File(path);
                                 String[] files = dir.list();

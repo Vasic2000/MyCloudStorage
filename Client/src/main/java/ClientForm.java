@@ -13,13 +13,19 @@ import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
     private String path = "client/src/main/resources/client_storage";
+    String file;
 
     @FXML
     private ListView<String> listClient;
 
     @FXML
-    public void handleMouseClickClient(MouseEvent arg) {
-        System.out.println("clicked on " + listClient.getSelectionModel().getSelectedItem());
+    public void handleMouseClickClient() {
+        file = listClient.getSelectionModel().getSelectedItem();
+        File current = new File(path + "/" + file);
+        if(current.isDirectory())
+            System.out.println(file + " is a directory");
+        else
+            System.out.println(file + " is a file");
     }
 
 
@@ -27,10 +33,25 @@ public class ClientForm implements Initializable {
     private ListView<String> listServer;
 
     @FXML
-    public void handleMouseClickServer(MouseEvent arg) {
-        System.out.println("clicked on " + listServer.getSelectionModel().getSelectedItem());
+    public void handleMouseClickServer() {
+        file = listServer.getSelectionModel().getSelectedItem();
+        if(isServerDirectory(file))
+            System.out.println(file + " is a directory");
+        else
+            System.out.println(file + " is a file");
     }
 
+    private boolean isServerDirectory(String file) {
+        System.out.println("Спрашиваю сервер кто такой " + file);
+        try {
+            cos.writeUTF("_whoIsFile");
+            cos.writeUTF(file);
+            return cis.readBoolean();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     private DataInputStream cis;
     private DataOutputStream cos;
@@ -49,60 +70,62 @@ public class ClientForm implements Initializable {
         }
     }
 
-    public void upload(ActionEvent actionEvent) {
-        String file = listClient.getSelectionModel().getSelectedItem();
-        System.out.println(file);
-        try {
-            cos.writeUTF(file);
-            File current = new File(path + "/" + file);
-            cos.writeLong(current.length());
-            FileInputStream is = new FileInputStream(current);
-            int tmp;
-            byte [] buffer = new byte[8192];
-            while ((tmp = is.read(buffer)) != -1) {
-                cos.write(buffer, 0, tmp);
+    public void upload() {
+        if (!file.isEmpty()) {
+            System.out.println(file);
+            try {
+                cos.writeUTF(file);
+                File current = new File(path + "/" + file);
+                cos.writeLong(current.length());
+                FileInputStream is = new FileInputStream(current);
+                int tmp;
+                byte[] buffer = new byte[8192];
+                while ((tmp = is.read(buffer)) != -1) {
+                    cos.write(buffer, 0, tmp);
+                }
+                is.close();
+                refreshServerList();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            is.close();
-            refreshServerList();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public void download(ActionEvent actionEvent) {
-        String file = listServer.getSelectionModel().getSelectedItem();
-        System.out.println("Прошу у сервера " + file);
-        try {
-            cos.writeUTF("_downLoad");
-            cos.writeUTF(file);
+    public void download() {
+        if (!file.isEmpty()) {
+            System.out.println("Прошу у сервера " + file);
+            try {
+                cos.writeUTF("_downLoad");
+                cos.writeUTF(file);
 
-            File dFile = new File("client/src/main/resources/client_storage/" + file);
-            if (!dFile.exists()) {
-                dFile.createNewFile();
-                FileOutputStream os = new FileOutputStream(dFile);
-                //                2. Получаю размер
-                long fileLength = cis.readLong();
-                System.out.println("Wait: " + fileLength + " bytes");
+                File dFile = new File("client/src/main/resources/client_storage/" + file);
+                if (!dFile.exists()) {
+                    dFile.createNewFile();
+                    FileOutputStream os = new FileOutputStream(dFile);
+                    //                2. Получаю размер
+                    long fileLength = cis.readLong();
+                    System.out.println("Wait: " + fileLength + " bytes");
 //                3. Читаю
-                byte[] buffer = new byte[8192];
-                for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
-                    int cnt = cis.read(buffer);
-                    os.write(buffer, 0, cnt);
+                    byte[] buffer = new byte[8192];
+                    for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
+                        int cnt = cis.read(buffer);
+                        os.write(buffer, 0, cnt);
+                    }
+                    System.out.println("Downloaded!");
+                    os.close();
+                    refreshClientList();
+                } else {
+                    System.out.println("Такой уже есть");
                 }
-                System.out.println("Downloaded!");
-                os.close();
-                refreshClientList();
-            } else {
-                System.out.println("Такой уже есть");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void refreshClientList() {
-        File file = new File(path);
-        String[] files = file.list();
+        File clientFile = new File(path);
+        String[] files = clientFile.list();
         listClient.getItems().clear();
         if (files != null) {
             for (String name : files) {
