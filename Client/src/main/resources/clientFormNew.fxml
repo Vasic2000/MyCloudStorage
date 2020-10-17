@@ -7,8 +7,8 @@
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientForm">
 
     <AnchorPane prefHeight="600.0" prefWidth="800.0">
-        <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
-        <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
+        <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" onMouseClicked="#handleMouseClickClient"/>
+        <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" onMouseClicked="#handleMouseClickServer"/>
 
         <Button layoutX="350.0" layoutY="225.0" mnemonicParsing="false" onAction="#upload" prefHeight="40.0" prefWidth="100.0" text="Client -&gt; Server" />
         <Button layoutX="350.0" layoutY="295.0" mnemonicParsing="false" onAction="#download" prefHeight="40.0" prefWidth="100.0" text="Client &lt;- Server" />

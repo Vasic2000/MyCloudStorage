@@ -2,6 +2,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -15,8 +16,21 @@ public class ClientForm implements Initializable {
 
     @FXML
     private ListView<String> listClient;
+
+    @FXML
+    public void handleMouseClickClient(MouseEvent arg) {
+        System.out.println("clicked on " + listClient.getSelectionModel().getSelectedItem());
+    }
+
+
     @FXML
     private ListView<String> listServer;
+
+    @FXML
+    public void handleMouseClickServer(MouseEvent arg) {
+        System.out.println("clicked on " + listServer.getSelectionModel().getSelectedItem());
+    }
+
 
     private DataInputStream cis;
     private DataOutputStream cos;
