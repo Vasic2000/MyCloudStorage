@@ -1,8 +1,6 @@
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +11,8 @@ import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
     private String path = "client/src/main/resources/client_storage";
-    String file;
+    private String relativePath = "";
+    private String file;
 
     @FXML
     private ListView<String> listClient;
@@ -21,11 +20,24 @@ public class ClientForm implements Initializable {
     @FXML
     public void handleMouseClickClient() {
         file = listClient.getSelectionModel().getSelectedItem();
-        File current = new File(path + "/" + file);
-        if(current.isDirectory())
-            System.out.println(file + " is a directory");
-        else
-            System.out.println(file + " is a file");
+
+        if (file.equals("...")) {
+            relativePath = navigateUp(relativePath);
+            refreshClientList();
+        } else {
+            File current = new File(path + relativePath + "/" + file);
+            if (current.isDirectory()) {
+                System.out.println(file + " is a directory");
+                relativePath = relativePath + "/" + file;
+                refreshClientList();
+            } else
+                System.out.println(file + " is a file");
+        }
+    }
+
+    private String navigateUp(String relativePath) {
+        int index = relativePath.lastIndexOf("/");
+        return relativePath.substring(0, index);
     }
 
 
@@ -97,8 +109,7 @@ public class ClientForm implements Initializable {
             try {
                 cos.writeUTF("_downLoad");
                 cos.writeUTF(file);
-
-                File dFile = new File("client/src/main/resources/client_storage/" + file);
+                File dFile = new File(path + relativePath + "/"+ file);
                 if (!dFile.exists()) {
                     dFile.createNewFile();
                     FileOutputStream os = new FileOutputStream(dFile);
@@ -124,10 +135,12 @@ public class ClientForm implements Initializable {
     }
 
     private void refreshClientList() {
-        File clientFile = new File(path);
+        File clientFile = new File(path + relativePath);
         String[] files = clientFile.list();
         listClient.getItems().clear();
         if (files != null) {
+            if(!relativePath.equals(""))
+                listClient.getItems().add("...");
             for (String name : files) {
                 listClient.getItems().add(name);
             }
@@ -157,7 +170,7 @@ public class ClientForm implements Initializable {
         return files;
     }
 
-    public void deleteItem(ActionEvent actionEvent) {
+    public void deleteItem() {
         String delFile = listClient.getSelectionModel().getSelectedItem();
         System.out.println(delFile + " will be deleted!");
         File file = new File(path + "/" + delFile);
