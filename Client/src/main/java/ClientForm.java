@@ -47,10 +47,16 @@ public class ClientForm implements Initializable {
     @FXML
     public void handleMouseClickServer() {
         file = listServer.getSelectionModel().getSelectedItem();
-        if(isServerDirectory(file))
-            System.out.println(file + " is a directory");
-        else
-            System.out.println(file + " is a file");
+
+        if (file.equals("...")) {
+            relativePath = navigateUp(relativePath);
+            refreshServerList();
+        } else {
+            if (isServerDirectory(file))
+                System.out.println(file + " is a directory");
+            else
+                System.out.println(file + " is a file");
+        }
     }
 
     private boolean isServerDirectory(String file) {
