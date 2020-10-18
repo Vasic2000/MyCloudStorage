@@ -8,7 +8,8 @@ public class Client_Handler {
     private DataInputStream dis;
     private DataOutputStream dos;
     //    Где сервер собирает файлы
-    private static final String path = "server/src/main/resources/";
+    private String path = "server/src/main/resources/";
+    private String relativePath = "";
 
     public Client_Handler(final Socket socket) {
 
@@ -22,25 +23,42 @@ public class Client_Handler {
                     dos = new DataOutputStream(socket.getOutputStream());
 
                     while (!rxThread.isInterrupted()) {
-//                1. Жду имя и проверяю, нет ли уже такого
+//                1. Жду команду
                         String fileName = dis.readUTF();
 
                         switch (fileName) {
 
+                            case "_navigateIn" :
+                                String dirName = dis.readUTF();
+                                relativePath = relativePath + "/" + dirName;
+                                break;
+
+                            case "_navigateOut" :
+                                relativePath = navigateUp(relativePath);
+                                break;
+
                             case "_whoIsFile" :
                                 String boolFile = dis.readUTF();
-                                File bFile = new File("Server/src/main/resources/" + boolFile);
+                                File bFile = new File(path + relativePath + "/" + boolFile);
                                 Boolean bbb = bFile.isDirectory();
                                 dos.writeBoolean(bbb);
                                 break;
 
                             case "_getFilesList?":
-                                File dir = new File(path);
+                                File dir = new File(path + relativePath);
                                 String[] files = dir.list();
                                 if (files != null) {
-                                    dos.writeInt(files.length);
-                                    for (String file : files) {
-                                        dos.writeUTF(file);
+                                    if (!relativePath.equals("")) {
+                                        dos.writeInt(files.length + 1);
+                                        dos.writeUTF("...");
+                                        for (String file : files) {
+                                            dos.writeUTF(file);
+                                        }
+                                    } else {
+                                        dos.writeInt(files.length);
+                                        for (String file : files) {
+                                            dos.writeUTF(file);
+                                        }
                                     }
                                 } else {
                                     dos.writeInt(0);
@@ -51,7 +69,7 @@ public class Client_Handler {
                             case "_downLoad":
                                 String dFile = dis.readUTF();
                                 System.out.println("Отдаю file: " + dFile);
-                                File file = new File("Server/src/main/resources/" + dFile);
+                                File file = new File(path + relativePath + "/" + dFile);
                                 if (!file.exists()) {
 //                      Сюда попасть не должен никогда, но пусть будет для отладки
                                     System.out.println("У server нет " + dFile + " файла :(");
@@ -78,7 +96,7 @@ public class Client_Handler {
                             default:
 
                                 System.out.println("Save file: " + fileName);
-                                File saveFile = new File("server/src/main/resources/" + fileName);
+                                File saveFile = new File(path + relativePath + "/" + fileName);
                                 if (!saveFile.exists()) {
                                     saveFile.createNewFile();
                                     FileOutputStream os = new FileOutputStream(saveFile);
@@ -105,6 +123,11 @@ public class Client_Handler {
             }
         });
         rxThread.start();
+    }
+
+    private String navigateUp(String relativePath) {
+        int index = relativePath.lastIndexOf("/");
+        return relativePath.substring(0, index);
     }
 
     public void disconnect() {

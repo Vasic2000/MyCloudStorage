@@ -12,26 +12,29 @@ import java.util.ResourceBundle;
 public class ClientForm implements Initializable {
     private String path = "client/src/main/resources/client_storage";
     private String relativePath = "";
-    private String file;
+    private String clientFile, serverFile;
+
+    private DataInputStream cis;
+    private DataOutputStream cos;
 
     @FXML
     private ListView<String> listClient;
 
     @FXML
     public void handleMouseClickClient() {
-        file = listClient.getSelectionModel().getSelectedItem();
+        clientFile = listClient.getSelectionModel().getSelectedItem();
 
-        if (file.equals("...")) {
+        if (clientFile.equals("...")) {
             relativePath = navigateUp(relativePath);
             refreshClientList();
         } else {
-            File current = new File(path + relativePath + "/" + file);
+            File current = new File(path + relativePath + "/" + clientFile);
             if (current.isDirectory()) {
-                System.out.println(file + " is a directory");
-                relativePath = relativePath + "/" + file;
+                System.out.println(clientFile + " is a directory");
+                relativePath = relativePath + "/" + clientFile;
                 refreshClientList();
             } else
-                System.out.println(file + " is a file");
+                System.out.println(clientFile + " is a file");
         }
     }
 
@@ -40,22 +43,40 @@ public class ClientForm implements Initializable {
         return relativePath.substring(0, index);
     }
 
-
     @FXML
     private ListView<String> listServer;
 
     @FXML
-    public void handleMouseClickServer() {
-        file = listServer.getSelectionModel().getSelectedItem();
-
-        if (file.equals("...")) {
-            relativePath = navigateUp(relativePath);
+    public void handleMouseClickServer() throws IOException {
+        serverFile = listServer.getSelectionModel().getSelectedItem();
+        if (serverFile.equals("...")) {
+            serverNavigateOut();
             refreshServerList();
         } else {
-            if (isServerDirectory(file))
-                System.out.println(file + " is a directory");
+            if (isServerDirectory(serverFile)) {
+                serverNavigateIn();
+                cos.writeUTF(serverFile);
+                System.out.println(serverFile + " is a directory");
+                refreshServerList();
+            }
             else
-                System.out.println(file + " is a file");
+                System.out.println(serverFile + " is a file");
+        }
+    }
+
+    private void serverNavigateIn() {
+        try {
+            cos.writeUTF("_navigateIn");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void serverNavigateOut() {
+        try {
+            cos.writeUTF("_navigateOut");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -70,9 +91,6 @@ public class ClientForm implements Initializable {
         }
         return false;
     }
-
-    private DataInputStream cis;
-    private DataOutputStream cos;
 
     public void initialize(URL location, ResourceBundle resources) {
         try {
@@ -89,11 +107,11 @@ public class ClientForm implements Initializable {
     }
 
     public void upload() {
-        if (!file.isEmpty()) {
-            System.out.println(file);
+        if (!clientFile.isEmpty()) {
+            System.out.println(clientFile);
             try {
-                cos.writeUTF(file);
-                File current = new File(path + "/" + file);
+                cos.writeUTF(clientFile);
+                File current = new File(path + relativePath + "/" + clientFile);
                 cos.writeLong(current.length());
                 FileInputStream is = new FileInputStream(current);
                 int tmp;
@@ -110,12 +128,12 @@ public class ClientForm implements Initializable {
     }
 
     public void download() {
-        if (!file.isEmpty()) {
-            System.out.println("Прошу у сервера " + file);
+        if (!serverFile.isEmpty()) {
+            System.out.println("Прошу у сервера " + serverFile);
             try {
                 cos.writeUTF("_downLoad");
-                cos.writeUTF(file);
-                File dFile = new File(path + relativePath + "/"+ file);
+                cos.writeUTF(serverFile);
+                File dFile = new File(path + relativePath + "/"+ serverFile);
                 if (!dFile.exists()) {
                     dFile.createNewFile();
                     FileOutputStream os = new FileOutputStream(dFile);
