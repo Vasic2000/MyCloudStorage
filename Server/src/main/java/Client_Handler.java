@@ -8,7 +8,7 @@ public class Client_Handler {
     private DataInputStream dis;
     private DataOutputStream dos;
     //    Где сервер собирает файлы
-    private String path = "server/src/main/resources/";
+    private String path = "server/src/main/resources";
     private String relativePath = "";
 
     public Client_Handler(final Socket socket) {
@@ -63,7 +63,6 @@ public class Client_Handler {
                                 } else {
                                     dos.writeInt(0);
                                 }
-                                dos.flush();
                                 break;
 
                             case "_downLoad":
@@ -107,9 +106,10 @@ public class Client_Handler {
                                     byte[] buffer = new byte[8192];
                                     for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
                                         int cnt = dis.read(buffer);
+                                        System.out.println(buffer.toString());
                                         os.write(buffer, 0, cnt);
                                     }
-                                    System.out.println("File successfully uploaded!" + buffer.toString());
+                                    System.out.println("File successfully uploaded!" + saveFile);
                                     os.close();
                                 } else {
                                     System.out.println("Такой уже есть");

@@ -119,7 +119,10 @@ public class ClientForm implements Initializable {
                 while ((tmp = is.read(buffer)) != -1) {
                     cos.write(buffer, 0, tmp);
                 }
+                cos.flush();
                 is.close();
+
+ //               Thread.sleep(150); //Плохое решение команды и файлы в один поток, костыль, чтобы следующая команда не цеплялась к файлу
                 refreshServerList();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -186,7 +189,6 @@ public class ClientForm implements Initializable {
     private List<String> getServerFiles() throws IOException {
         List<String> files = new ArrayList();
         cos.writeUTF("_getFilesList?");
-        cos.flush();
         int listSize = cis.readInt();
         for (int i = 0; i < listSize; i++) {
             files.add(cis.readUTF());
