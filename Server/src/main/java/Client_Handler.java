@@ -81,6 +81,7 @@ public class Client_Handler {
                                         while ((tmp = is.read(buffer)) != -1) {
                                             dos.write(buffer, 0, tmp);
                                         }
+                                        dos.flush();
                                         is.close();
                                     } catch (IOException e) {
                                         e.printStackTrace();
@@ -132,6 +133,7 @@ public class Client_Handler {
 
     public void disconnect() {
         try {
+            System.out.println("Всё, клиент " + socket.toString() + " отключился");
             socket.close();
         } catch (IOException io) {
             System.out.println(io);

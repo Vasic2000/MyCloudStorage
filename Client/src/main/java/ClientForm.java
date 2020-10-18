@@ -1,6 +1,8 @@
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
-    private String path = "client/src/main/resources/client_storage";
+    private final String path = "client/src/main/resources/client_storage";
     private String relativePath = "";
     private String clientFile, serverFile;
 
@@ -64,6 +66,20 @@ public class ClientForm implements Initializable {
         }
     }
 
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            Socket socket = new Socket("localhost", 8189);
+            cis = new DataInputStream(socket.getInputStream());
+            cos = new DataOutputStream(socket.getOutputStream());
+
+            refreshClientList();
+            refreshServerList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void serverNavigateIn() {
         try {
             cos.writeUTF("_navigateIn");
@@ -92,20 +108,6 @@ public class ClientForm implements Initializable {
         return false;
     }
 
-    public void initialize(URL location, ResourceBundle resources) {
-        try {
-            Socket socket = new Socket("localhost", 8189);
-            cis = new DataInputStream(socket.getInputStream());
-            cos = new DataOutputStream(socket.getOutputStream());
-
-            refreshClientList();
-            refreshServerList();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public void upload() {
         if (!clientFile.isEmpty()) {
             System.out.println(clientFile);
@@ -121,8 +123,7 @@ public class ClientForm implements Initializable {
                 }
                 cos.flush();
                 is.close();
-
- //               Thread.sleep(150); //Плохое решение команды и файлы в один поток, костыль, чтобы следующая команда не цеплялась к файлу
+                Thread.sleep(150); //Костыль. Плохое решение команды и файлы в один поток. Сделано, чтобы следующая команда не цеплялась к файлу, не нашёл , видимо из-за многопоточности.
                 refreshServerList();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -204,5 +205,19 @@ public class ClientForm implements Initializable {
             System.out.println(delFile + " файл был удален");
         } else System.out.println("Файл " + delFile + " не был найден");
         refreshClientList();
+    }
+
+    @FXML
+    private Button closeButton;
+
+    @FXML
+    public void closeButtonAction() {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        try {
+            cos.writeUTF("_/end");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        stage.close();
     }
 }
