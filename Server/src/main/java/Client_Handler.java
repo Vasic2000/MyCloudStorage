@@ -7,8 +7,9 @@ public class Client_Handler {
     private final Thread rxThread;
     private DataInputStream dis;
     private DataOutputStream dos;
-    //    Где сервер собирает файлы
+//    Где сервер собирает файлы
     private String path = "server/src/main/resources";
+//    Дополнительный путь, подпапки
     private String relativePath = "";
 
     public Client_Handler(final Socket socket) {
@@ -40,8 +41,7 @@ public class Client_Handler {
                             case "_whoIsFile" :
                                 String boolFile = dis.readUTF();
                                 File bFile = new File(path + relativePath + "/" + boolFile);
-                                Boolean bbb = bFile.isDirectory();
-                                dos.writeBoolean(bbb);
+                                dos.writeBoolean(bFile.isDirectory());
                                 break;
 
                             case "_getFilesList?":
@@ -107,10 +107,9 @@ public class Client_Handler {
                                     byte[] buffer = new byte[8192];
                                     for (int i = 0; i < (fileLength + 8191) / 8192; i++) {
                                         int cnt = dis.read(buffer);
-                                        System.out.println(buffer.toString());
                                         os.write(buffer, 0, cnt);
                                     }
-                                    System.out.println("File successfully uploaded!" + saveFile);
+                                    System.out.println(saveFile + " Загружен!");
                                     os.close();
                                 } else {
                                     System.out.println("Такой уже есть");

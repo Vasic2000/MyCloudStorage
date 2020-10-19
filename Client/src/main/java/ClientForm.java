@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ClientForm implements Initializable {
+//    Где у клиента лежат файлы
     private final String path = "client/src/main/resources/client_storage";
+//    Дополнительный путь на случай создания папок и подпапок
     private String relativePath = "";
+//    Переменные отвечают за выбранный файл, а также где он (у клиента или на сервере)
     private String clientFile, serverFile;
 
     private DataInputStream cis;
@@ -72,8 +75,7 @@ public class ClientForm implements Initializable {
             cis = new DataInputStream(socket.getInputStream());
             cos = new DataOutputStream(socket.getOutputStream());
 
-            refreshClientList();
-            refreshServerList();
+            refreshComand();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,5 +221,14 @@ public class ClientForm implements Initializable {
             e.printStackTrace();
         }
         stage.close();
+    }
+
+    public void refreshComand() {
+        refreshClientList();
+        try {
+            refreshServerList();
+        } catch (IOException e) {
+            System.out.println("Что-то не так с сервером");
+        }
     }
 }
