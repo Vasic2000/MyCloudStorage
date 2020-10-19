@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientForm">
 
     <AnchorPane prefHeight="600.0" prefWidth="800.0">
-        <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
-        <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" prefHeight="500.0" prefWidth="300.0" />
+        <ListView fx:id="listClient" layoutX="15.0" layoutY="15.0" onMouseClicked="#handleMouseClickClient"
+                  prefHeight="500.0" prefWidth="300.0"/>
+        <ListView fx:id="listServer" layoutX="475.0" layoutY="15.0" onMouseClicked="#handleMouseClickServer"
+                  prefHeight="500.0" prefWidth="300.0"/>
 
-        <Button layoutX="350.0" layoutY="225.0" mnemonicParsing="false" onAction="#upload" prefHeight="40.0" prefWidth="100.0" text="Client -&gt; Server" />
-        <Button layoutX="350.0" layoutY="295.0" mnemonicParsing="false" onAction="#download" prefHeight="40.0" prefWidth="100.0" text="Client &lt;- Server" />
+        <Button layoutX="325.0" layoutY="225.0" mnemonicParsing="false" onAction="#upload" prefHeight="40.0"
+                prefWidth="140.0" text="Client -&gt; Server"/>
+        <Button layoutX="325.0" layoutY="295.0" mnemonicParsing="false" onAction="#download" prefHeight="40.0"
+                prefWidth="140.0" text="Client &lt;- Server"/>
 
-        <Button layoutX="115.0" layoutY="526.0" mnemonicParsing="false" onAction="#deleteItem" prefHeight="40.0" prefWidth="100.0" text="DELETE">
-         <font>
-            <Font size="14.0" />
-         </font></Button>
-        <Button layoutX="575.0" layoutY="526.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Exit Form">
-         <font>
-            <Font size="14.0" />
-         </font></Button>
+        <Button layoutX="115.0" layoutY="526.0" mnemonicParsing="false" onAction="#deleteItem" prefHeight="40.0"
+                prefWidth="100.0" text="DELETE">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+        <Button fx:id="closeButton" layoutX="575.0" layoutY="526.0" mnemonicParsing="false"
+                onAction="#closeButtonAction" prefHeight="40.0" prefWidth="100.0" text="Exit Form">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+        <Button fx:id="refreshButton" layoutX="325.0" layoutY="526.0" mnemonicParsing="false" onAction="#refreshComand" prefHeight="40.0"
+                prefWidth="150.0" text="Refresh"/>
 
     </AnchorPane>
    <columnConstraints>

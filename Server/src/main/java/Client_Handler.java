@@ -7,8 +7,10 @@ public class Client_Handler {
     private final Thread rxThread;
     private DataInputStream dis;
     private DataOutputStream dos;
-    //    Где сервер собирает файлы
-    private static final String path = "server/src/main/resources/";
+//    Где сервер собирает файлы
+    private String path = "server/src/main/resources";
+//    Дополнительный путь, подпапки
+    private String relativePath = "";
 
     public Client_Handler(final Socket socket) {
 
@@ -22,29 +24,51 @@ public class Client_Handler {
                     dos = new DataOutputStream(socket.getOutputStream());
 
                     while (!rxThread.isInterrupted()) {
-//                1. Жду имя и проверяю, нет ли уже такого
+//                1. Жду команду
                         String fileName = dis.readUTF();
 
                         switch (fileName) {
 
+                            case "_navigateIn" :
+                                String dirName = dis.readUTF();
+                                relativePath = relativePath + "/" + dirName;
+                                break;
+
+                            case "_navigateOut" :
+                                relativePath = navigateUp(relativePath);
+                                break;
+
+                            case "_whoIsFile" :
+                                String boolFile = dis.readUTF();
+                                File bFile = new File(path + relativePath + "/" + boolFile);
+                                dos.writeBoolean(bFile.isDirectory());
+                                break;
+
                             case "_getFilesList?":
-                                File dir = new File(path);
+                                File dir = new File(path + relativePath);
                                 String[] files = dir.list();
                                 if (files != null) {
-                                    dos.writeInt(files.length);
-                                    for (String file : files) {
-                                        dos.writeUTF(file);
+                                    if (!relativePath.equals("")) {
+                                        dos.writeInt(files.length + 1);
+                                        dos.writeUTF("...");
+                                        for (String file : files) {
+                                            dos.writeUTF(file);
+                                        }
+                                    } else {
+                                        dos.writeInt(files.length);
+                                        for (String file : files) {
+                                            dos.writeUTF(file);
+                                        }
                                     }
                                 } else {
                                     dos.writeInt(0);
                                 }
-                                dos.flush();
                                 break;
 
                             case "_downLoad":
                                 String dFile = dis.readUTF();
                                 System.out.println("Отдаю file: " + dFile);
-                                File file = new File("Server/src/main/resources/" + dFile);
+                                File file = new File(path + relativePath + "/" + dFile);
                                 if (!file.exists()) {
 //                      Сюда попасть не должен никогда, но пусть будет для отладки
                                     System.out.println("У server нет " + dFile + " файла :(");
@@ -57,6 +81,7 @@ public class Client_Handler {
                                         while ((tmp = is.read(buffer)) != -1) {
                                             dos.write(buffer, 0, tmp);
                                         }
+                                        dos.flush();
                                         is.close();
                                     } catch (IOException e) {
                                         e.printStackTrace();
@@ -71,7 +96,7 @@ public class Client_Handler {
                             default:
 
                                 System.out.println("Save file: " + fileName);
-                                File saveFile = new File("server/src/main/resources/" + fileName);
+                                File saveFile = new File(path + relativePath + "/" + fileName);
                                 if (!saveFile.exists()) {
                                     saveFile.createNewFile();
                                     FileOutputStream os = new FileOutputStream(saveFile);
@@ -84,7 +109,7 @@ public class Client_Handler {
                                         int cnt = dis.read(buffer);
                                         os.write(buffer, 0, cnt);
                                     }
-                                    System.out.println("File successfully uploaded!" + buffer.toString());
+                                    System.out.println(saveFile + " Загружен!");
                                     os.close();
                                 } else {
                                     System.out.println("Такой уже есть");
@@ -100,8 +125,14 @@ public class Client_Handler {
         rxThread.start();
     }
 
+    private String navigateUp(String relativePath) {
+        int index = relativePath.lastIndexOf("/");
+        return relativePath.substring(0, index);
+    }
+
     public void disconnect() {
         try {
+            System.out.println("Всё, клиент " + socket.toString() + " отключился");
             socket.close();
         } catch (IOException io) {
             System.out.println(io);
