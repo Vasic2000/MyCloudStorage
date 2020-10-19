@@ -1,5 +1,6 @@
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
@@ -27,6 +28,7 @@ public class ClientForm implements Initializable {
 
     @FXML
     public void handleMouseClickClient() {
+        listServer.getSelectionModel().clearSelection();
         clientFile = listClient.getSelectionModel().getSelectedItem();
 
         if (clientFile.equals("...")) {
@@ -53,6 +55,7 @@ public class ClientForm implements Initializable {
 
     @FXML
     public void handleMouseClickServer() throws IOException {
+        listClient.getSelectionModel().clearSelection();
         serverFile = listServer.getSelectionModel().getSelectedItem();
         if (serverFile.equals("...")) {
             serverNavigateOut();
@@ -201,12 +204,28 @@ public class ClientForm implements Initializable {
 
     public void deleteItem() {
         String delFile = listClient.getSelectionModel().getSelectedItem();
-        System.out.println(delFile + " will be deleted!");
-        File file = new File(path + "/" + delFile);
-        if (file.delete()) {
-            System.out.println(delFile + " файл был удален");
-        } else System.out.println("Файл " + delFile + " не был найден");
-        refreshClientList();
+        if(delFile!=null) {
+            System.out.println(delFile + " will be deleted!");
+            File file = new File(path + "/" + delFile);
+            if (file.delete()) {
+                System.out.println(delFile + " файл был удален");
+            } else System.out.println("Файл " + delFile + " не был найден");
+            refreshClientList();
+        }
+
+        delFile = listServer.getSelectionModel().getSelectedItem();
+        if(delFile!=null) {
+            showRefuse();
+        }
+    }
+
+    void showRefuse() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Impossible :(");
+        // Header Text: null
+        alert.setHeaderText(null);
+        alert.setContentText("Я не могу удалить файл с сервера");
+        alert.showAndWait();
     }
 
     @FXML
