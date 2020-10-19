@@ -206,7 +206,7 @@ public class ClientForm implements Initializable {
         String delFile = listClient.getSelectionModel().getSelectedItem();
         if(delFile!=null) {
             System.out.println(delFile + " will be deleted!");
-            File file = new File(path + "/" + delFile);
+            File file = new File(path + relativePath + "/" + delFile);
             if (file.delete()) {
                 System.out.println(delFile + " файл был удален");
             } else System.out.println("Файл " + delFile + " не был найден");
